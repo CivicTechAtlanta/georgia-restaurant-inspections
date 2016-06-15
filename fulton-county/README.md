@@ -1,4 +1,4 @@
-### Info in this folder was originally created at the Code For Atlanta HackForChange event in Summer 2015.  It was copied into this folder as is on 6/14/16
+**This folder was originally housed at www.github.com/codeforatlanta/inspectr.  Info from that repo was copied into this folder on 6/14/16**
 
 # Inspectr
 
