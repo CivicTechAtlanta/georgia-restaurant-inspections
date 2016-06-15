@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Inspectr API</title>
+    <link rel="stylesheet" href="application.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <form action="inspectr-search" method="get">
+      <div class="box">
+        <div class="search-container">
+          <span class="icon"><i class="fa fa-search"></i></span>
+          <input type="search" name="q" id="search" placeholder="Search...">
+        </div>
+      </div>
+    </form>
+    <% if @matches %>
+    <div class="items"></div>
+      <% @matches.each do |match| %>
+        <%= erb :match, locals: {match: match} %>
+      <% end %>
+    </div>
+    <% end %>
+  </body>
+</html>

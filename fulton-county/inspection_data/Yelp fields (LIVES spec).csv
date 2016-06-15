@@ -1,0 +1,27 @@
+Table,Name,Type,Required,Using,Description
+businesses,business_id,string,Yes,,"Unique identifier for the business. For many cities, this may be the license number."
+businesses,name,string,Yes,,Common name of the business
+businesses,address,string,Yes,,Street address of the business. For example: 706 Mission St.
+businesses,city,string,No,,City of the business. This field must be included if the file contains businesses from multiple cities.
+businesses,state,string,No,,State or province for the business. In the U.S. this should be the two-letter code for the state.
+businesses,postal_code,string,No,,Zip code or other postal code.
+businesses,latitude,number,No,,Latitude of the business. This field must be a valid WGS 84 latitude. For example: 37.7859547
+businesses,longitude,number,No,,Longitude of the business. This field must be a valid WGS 84 longitude. For example: -122.4024658
+businesses,phone_number,string,No,,Phone number for a business including country specific dialing information. For example: +14159083801
+inspections,business_id,string,Yes,,Unique identifier of the business for which this inspection was done
+inspections,score,number,No*,,"Inspection score on a 0-100 scale. 100 is the highest score * This column must always be present ininspections.csv. However, it can be safely left blank for inspection rows that don’t have an associated score (For examples, some municipalities don’t associate a follow-up inspection with a score)."
+inspections,date,date,Yes,,Date of the inspection in YYYYMMDD format
+inspections,description,string,No,,Single line description containing details on the outcome of an inspection. Use of this field is only encouraged if no violations are provided.
+inspections,type,string,No,,"String representing the type of inspection. Must be (initial, routine, followup, complaint)"
+violations,business_id,string,Yes,,Unique identifier of the business for which this violation applies
+violations,date,date,Yes,,Date of violation in YYYYMMDD format. This should correspond with the related inspection
+violations,code,string,No,,"Code for the violation. It is recommended that this be based on the FDA Food Code. However, municipalities can decide to use pre-existing codes for this field"
+violations,description,string,No,,One line description of the violation
+feed_info,feed_date,date,Yes,,Date this feed was generated in YYYYMMDD format
+feed_info,feed_version,string,Yes,,Version of the LIVES specification used to generate this feed. For example ‘0.4.1’
+feed_info,municipality_name,string,Yes,,Name of the municipality providing this feed. For example ‘San Francisco’ or ‘Multnomah County’
+feed_info,municipality_url,string,No,,URL of the publishing municipality’s website
+feed_info,contact_email,string,No,,Email address of the person to contact regarding invalid data in this feed
+legend,minimum_score,number,Yes,,Minimum score that can be classified with this description
+legend,maximum_score,number,Yes,,Maximum score that can be classified with this description
+legend,description,string,Yes,,Formatted version of the score in the format typically presented by the municipality. For example ‘A’ or ‘Pass’
