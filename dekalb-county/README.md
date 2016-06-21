@@ -3,6 +3,7 @@
 home page: http://atlanta.digitalhealthdepartment.com/dekalb/
 
 Basic program flow:
+
 1. Loop through search query that has all (295) pages, with 10 establishments each
 2. Loop through each page and grab establishment info, save to a list in R
 3. Loop through each inspection for the establishment, save info to list in R
