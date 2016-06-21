@@ -1,6 +1,7 @@
 ## Dekalb County Health Inspection Data
 
 home page: http://atlanta.digitalhealthdepartment.com/dekalb/
+info from Dekalb Health Dept. on food safety inspection form: http://dekalbhealth.net/wp-content/uploads/2010/09/foodsfty_inspectionReport.html
 
 #### Basic program flow:
 
@@ -12,15 +13,12 @@ home page: http://atlanta.digitalhealthdepartment.com/dekalb/
 	- Use appropriate scraping script depending on the template (most are defined in the URL)
 
 #### Data Structure:
-INDEX PAGE
-- establishment links
-	- ESTABLISHMENT PAGE
-		- establishment name
-		- establishment address <- -[ ] TODO: need to figure out
-		- INSPECTIONS
-			- inspection link
-			- inspection title
-			- inspection date
-			- inspection score
-			- INSPECTION DATA
-				- Inspection Report Data Frame (scraped data pieces off of inspection report, such as temperature measurements, CFSM, other establishment info, etc.)
+- index page link
+     - establishment link
+     	- establishment name
+     	- establishment address <- -[ ] TODO: need to figure out
+     	- inspection link
+     		- inspection title
+     		- inspection date
+     		- inspection score
+     		- Inspection Data Frame (scraped data pieces off of inspection report, such as temperature measurements, CFSM, other establishment info, etc.)
