@@ -31,24 +31,29 @@ get.dekalb.scores <- function(index.start = 1, index.end = 296){
      establishment.pages <- 
           lapply(index.page.links[index.start:index.end], 
                  function(x) read_html(x) %>% html_nodes("a") %>% 
-                      html_attr("href") %>% .[grepl("id=", .)] %>% paste0(base.url, .)) %>% unlist()
+                      html_attr("href") %>% .[grepl("id=", .)] %>% 
+                      paste0(base.url, .)) %>% unlist()
      
      # for each establishment page, get a list of all of the inspection links
      inspection.link <-
           lapply(establishment.pages,
                  function(x) read_html(x) %>% html_nodes("b a ") %>%
-                      html_attr("href") %>% gsub("\\.\\.", "http://atlanta.digitalhealthdepartment.com", .)) %>% unlist()
+                      html_attr("href") %>% 
+                      gsub("\\.\\.", "http://atlanta.digitalhealthdepartment.com", .)) %>% 
+          unlist()
      
      # for each inspection link, extract the inspection template type
      # it is embedded in the inspection link url after _templates/22/; examples: Food, Food_2015, Pool_2008
      # later, each inspection template type will have its own unique scraper
      inspection.template.type <-
           substr(inspection.link, nchar("http://atlanta.digitalhealthdepartment.com/_templates/22/"), 
-                 nchar("http://atlanta.digitalhealthdepartment.com/_templates/22/") + 10) %>% str_split("/") %>%
+                 nchar("http://atlanta.digitalhealthdepartment.com/_templates/22/") + 10) %>% 
+          str_split("/") %>%
           lapply(function(x) x[2]) %>% unlist()
      
      # create data frame of inspection info
-     inspections <- data.frame(inspection.link, inspection.template.type, stringsAsFactors = FALSE)
+     inspections <- data.frame(inspection.link, inspection.template.type, 
+                               stringsAsFactors = FALSE)
      
      # separate above data frame into the different templates
      # NOTE: for efficiency sake if needed, can be done more efficiently with group_by(inspection.template.type)
@@ -122,24 +127,31 @@ get.dekalb.scores <- function(index.start = 1, index.end = 296){
           
           ## Addendum 1 Food Temperatures
           
-          if(inspection.info$purpose.of.inspection == "Construction/Preoperational"){
-               cold.holding <- NA
-          } else {
-               cold.holding <- page.html %>% html_nodes("table:nth-child(8) tr:nth-child(3) table") %>% html_table() %>% .[[1]]
-               names(cold.holding) <- cold.holding[2,]
-               
-               cold.holding <- rbind(
-                    cold.holding %>% .[3:nrow(.),] %>% 
-                         lapply(., function(vec) gsub("(Â)|(Â\\s{1})", "", vec)) %>% .[1:4] %>% data.frame(),
-                    cold.holding %>% .[3:nrow(.),] %>%
-                         lapply(., function(vec) gsub("(Â)|(Â\\s{1})", "", vec)) %>% .[5:8] %>% data.frame())
-               
-               cold.holding <- cold.holding %>% mutate(Item = str_split(Item.Location, pattern = " / ") %>% lapply(function(x) x[1]) %>% unlist() %>% factor(),
-                                                       Location = str_split(Item.Location, pattern = " / ") %>% lapply(function(x) x[2]) %>% unlist() %>% factor(),
-                                                       Temp = as.numeric(substr(Temp, 1, 4))) %>% select(-Item.Location)
-          }
-          
-          return(list(inspection.info, cold.holding))
+          # if(inspection.info$purpose.of.inspection == "Construction/Preoperational"){
+          #      cold.holding <- NA
+          # } else {
+          #      cold.holding <- page.html %>% 
+          #           html_nodes("table:nth-child(8) tr:nth-child(3) table") %>% 
+          #           html_table() %>% .[[1]]
+          #      names(cold.holding) <- cold.holding[2,]
+          #      
+          #      cold.holding <- rbind(
+          #           cold.holding %>% .[3:nrow(.),] %>% 
+          #                lapply(., function(vec) gsub("(Â)|(Â\\s{1})", "", vec)) %>% .[1:4] %>% data.frame(),
+          #           cold.holding %>% .[3:nrow(.),] %>%
+          #                lapply(., function(vec) gsub("(Â)|(Â\\s{1})", "", vec)) %>% .[5:8] %>% data.frame())
+          #      
+          #      cold.holding <- cold.holding %>% 
+          #           mutate(Item = str_split(Item.Location, pattern = " / ") %>% 
+          #                       lapply(function(x) x[1]) %>% 
+          #                       unlist() %>% factor(), 
+          #                  Location = str_split(Item.Location, pattern = " / ") %>% 
+          #                       lapply(function(x) x[2]) %>% unlist() %>% factor(),
+          #                  Temp = as.numeric(substr(Temp, 1, 4))) %>% select(-Item.Location)
+          # }
+          # 
+          # return(list(inspection.info, cold.holding))
+          return(inspection.info)
      }
      
      # exceptions: pages that caused errors in the scraper (will skip over these, and handle later)
