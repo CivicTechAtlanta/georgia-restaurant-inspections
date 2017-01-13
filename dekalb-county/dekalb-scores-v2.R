@@ -2,6 +2,7 @@ library(lubridate)
 library(rvest)
 library(dplyr)
 library(readr)
+library(ggplot2)
 
 base.url <- "http://ga.healthinspections.us/dekalb/"
 
@@ -65,40 +66,54 @@ scrape_inspection_data_Food <- function(page){
      page.html <- read_html(page)
      data.frame(
           # establishment name
-          establishment.name = scrape.node(page.html, "tr:nth-child(2) .bottom.slightlyLargerFont"),
+          establishment.name = zerolength_nacheck(scrape.node(page.html, "tr:nth-child(2) .bottom.slightlyLargerFont")),
           # address
-          address = scrape.node(page.html, "td .bottom.slightlyLargerFont"),
+          address = zerolength_nacheck(scrape.node(page.html, "td .bottom.slightlyLargerFont")),
           # city
-          city = scrape.node(page.html,"table:nth-child(2) .slightlyLargerFont:nth-child(2)"),
+          city = zerolength_nacheck(scrape.node(page.html,"table:nth-child(2) .slightlyLargerFont:nth-child(2)")),
           # time in (H)
-          time.in.h = scrape.node(page.html, "table:nth-child(2) .slightlyLargerFont:nth-child(4)", type = "number"),
+          time.in.h = zerolength_nacheck(scrape.node(page.html, "table:nth-child(2) .slightlyLargerFont:nth-child(4)", type = "number")),
           # time in (M)
-          time.in.m = scrape.node(page.html, ".slightlyLargerFont:nth-child(6)", type = "number"),
+          time.in.m = zerolength_nacheck(scrape.node(page.html, ".slightlyLargerFont:nth-child(6)", type = "number")),
           # time in (AM/PM)
-          time.in.ampm = scrape.node(page.html, ":nth-child(7) sup"),
+          time.in.ampm = zerolength_nacheck(scrape.node(page.html, ":nth-child(7) sup")),
           # time out (H)
-          time.out.h = scrape.node(page.html, ".slightlyLargerFont:nth-child(8)", type = "number"),
+          time.out.h = zerolength_nacheck(scrape.node(page.html, ".slightlyLargerFont:nth-child(8)", type = "number")),
           # time out (M)
-          time.out.m = scrape.node(page.html, ".slightlyLargerFont:nth-child(10)", type = "number"),
+          time.out.m = zerolength_nacheck(scrape.node(page.html, ".slightlyLargerFont:nth-child(10)", type = "number")),
           # time out (AM/PM)
-          time.out.ampm = scrape.node(page.html, ":nth-child(11) sup"),
+          time.out.ampm = zerolength_nacheck(scrape.node(page.html, ":nth-child(11) sup")),
           # inspection date
-          inspection.date = scrape.node(page.html, ".bottom.slightlyLargerFont strong", type = "date"),
+          inspection.date = zerolength_nacheck(scrape.node(page.html, ".bottom.slightlyLargerFont strong", type = "date")),
           # cfsm (a.k.a. Certified Food Safety Manager)
-          cfsm = scrape.node(page.html, "table:nth-child(3) .slightlyLargerFont:nth-child(4)") %>% gsub("Â\\W+", "", .) %>% str_trim(),
+          cfsm = zerolength_nacheck(scrape.node(page.html, "table:nth-child(3) .slightlyLargerFont:nth-child(4)")) %>% 
+               gsub("Â\\W+", "", .) %>% str_trim(),
           # purpose of inspection
-          purpose.of.inspection = c("Construction/Preoperational", "Initial", 
-                                    "Premise Visit", "Routine", "Follow-Up", 
-                                    "Temporary")[scrape.node(page.html, ".mains img", type = "raw") %>% 
-                                                      html_attr("src") %>% str_detect("_filled") %>% .[1:6]],
+          purpose.of.inspection = ifelse(length(scrape.node(page.html, ".mains img", type = "raw")) == 0,
+                                         NA,
+                                         c("Construction/Preoperational", "Initial", 
+                                           "Premise Visit", "Routine", "Follow-Up", 
+                                           "Temporary")[scrape.node(page.html, ".mains img", type = "raw") %>% 
+                                                      html_attr("src") %>% str_detect("_filled") %>% .[1:6]]),
           # risk type
-          risk.type = c(1:3)[scrape.node(page.html, ".mains img", type = "raw") %>% html_attr("src") %>% str_detect("_filled") %>% .[7:9]],
+          risk.type = ifelse(length(scrape.node(page.html, ".mains img", type = "raw")) == 0,
+                             NA,
+                             c(1:3)[scrape.node(page.html, ".mains img", type = "raw") %>% 
+                                         html_attr("src") %>% str_detect("_filled") %>% .[7:9]]),
           # permit number
-          permit.number = scrape.node(page.html, ".slightlyLargerFont16", type = "text") %>% gsub("\\s", "", .),
+          permit.number = zerolength_nacheck(scrape.node(page.html, ".slightlyLargerFont16", type = "text")) %>% 
+               gsub("\\s", "", .),
           # current score
-          current.score = page.html %>% html_nodes(".bottom .right.bottom strong") %>% html_text() %>% gsub("\\r|\\n|\\t", "", .) %>% as.numeric(),
+          current.score = ifelse(length(page.html %>% html_nodes(".bottom .right.bottom strong")) == 0,
+                                 NA,
+                                 page.html %>% html_nodes(".bottom .right.bottom strong") %>%
+                                      html_text() %>% gsub("\\r|\\n|\\t", "", .) %>% as.numeric()),
           # current grade
-          current.grade = page.html %>% html_nodes(".bottom .bottom:nth-child(2) div strong") %>% html_text() %>% gsub("\\r|\\n|\\t|\\s{2,}", "", .) %>% gsub(".+Â\\s", "", .)
+          current.grade = ifelse(length(page.html %>% html_nodes(".bottom .bottom:nth-child(2) div strong")) == 0,
+                                 NA,
+                                 page.html %>% html_nodes(".bottom .bottom:nth-child(2) div strong") %>% 
+                                      html_text() %>% gsub("\\r|\\n|\\t|\\s{2,}", "", .) %>% 
+                                      gsub(".+Â\\s", "", .))
      )
 }
 
@@ -190,18 +205,44 @@ for(i in 1:length(inspection_data_Food_2015)){
           as.Date(x, origin = as.Date("1970-01-01"))
 }
 
+for(i in 1:length(inspection_data_Food)){
+     x <- inspection_data_Food[[i]]$inspection.date
+     inspection_data_Food[[i]]$inspection.date <- 
+          as.Date(x, origin = as.Date("1970-01-01"))
+}
+
 # Save data from both templates into one data frame
 restaurant_inspection_data <- 
-     bind_rows(bind_rows(inspection_data_Food[1:2235]) %>% mutate(template_type = "Food"), 
-               bind_rows(inspection_data_Food_2015[1:3396]) %>% mutate(template_type = "Food_2015"))
+     bind_rows(bind_rows(inspection_data_Food) %>% mutate(template_type = "Food"), 
+               bind_rows(inspection_data_Food_2015) %>% mutate(template_type = "Food_2015"))
 
 # Combine time_in and time_out features into one date/time vector, and calculate inspection duration
 restaurant_inspection_data <-
      restaurant_inspection_data %>% 
      mutate(date_time_in = ymd_hm(paste0(inspection.date, " ", time.in.h, ":", time.in.m, " ", time.in.ampm)), 
             date_time_out = ymd_hm(paste0(inspection.date, " ", time.out.h, ":", time.out.m, " ", time.out.ampm)), 
-            inspection_duration = as.numeric(difftime(date_time_out, date_time_in, units = "hours"))) %>%
+            inspection_duration = as.numeric(difftime(date_time_out, date_time_in, units = "hours")),
+            purpose.of.inspection = ifelse(purpose.of.inspection == "Followup", "Follow-Up", purpose.of.inspection)) %>%
      filter(!is.na(establishment.name))
 
 # Write data to csv file in "scraped-data" folder
 write_csv(restaurant_inspection_data, "dekalb-county/scraped-data/dekalb_county_restaurant_inspections.csv")
+
+# Create plot of scores, and save as "ScorePlot.png"
+restaurant_inspection_data %>% 
+     filter(purpose.of.inspection == "Routine") %>% 
+     mutate(year = year(inspection.date), month = month(inspection.date)) %>% 
+     ggplot(aes(current.score)) + 
+     geom_bar(width = .8, aes(fill = cut(current.score, c(0, 69, 79, 89, 101)))) + 
+     facet_wrap(~year, scales = "free_y") + 
+     ggtitle("Dekalb County, GA Restaurant Inspection Scores") + 
+     xlab("Score") + ylab("# Inspections") + 
+     scale_fill_manual(values = c("red", "orange", "forestgreen", "green2"), 
+                       labels = c("U - Unsatisfactory Compliance", 
+                                  "C - Marginal Compliance", 
+                                  "B - Satisfactory Compliance", 
+                                  "A - Compliance Excellence"), 
+                       name = "Score Category") +
+     scale_x_continuous(breaks = seq(40, 100, by = 10)) +
+     labs(subtitle = "Routine Inspections Only")
+ggsave("ScorePlot.png", width = 9, height = 4)
