@@ -1,8 +1,8 @@
 ## Dekalb County Health Inspection Data
 
-Home Page: http://atlanta.digitalhealthdepartment.com/dekalb/
-Info from Dekalb Health Dept. on food safety inspection form: http://dekalbhealth.net/wp-content/uploads/2010/09/foodsfty_inspectionReport.html
-Food Safety Rules: https://dekalbhealth.net/envhealth/food-safety/
+- Home Page: http://atlanta.digitalhealthdepartment.com/dekalb/
+- Info from Dekalb Health Dept. on food safety inspection form: http://dekalbhealth.net/wp-content/uploads/2010/09/foodsfty_inspectionReport.html
+- Food Safety Rules: https://dekalbhealth.net/envhealth/food-safety/
 
 #### Basic program flow:
 
