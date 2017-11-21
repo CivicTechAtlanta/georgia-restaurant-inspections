@@ -3,6 +3,7 @@ library(rvest)
 library(dplyr)
 library(readr)
 library(ggplot2)
+library(stringr)
 
 base.url <- "http://ga.healthinspections.us/dekalb/"
 
@@ -21,7 +22,8 @@ result_pages <-
 # Loop through result pages and get establishment pages
 results <- vector(mode = "list", length = length(result_pages))
 for(i in 1:length(results)){
-     results[[i]]$establishment_pages <- 
+  cat("Getting result", i, "of", length(results), "\n")   
+  results[[i]]$establishment_pages <- 
           result_pages[i] %>% read_html() %>% html_nodes("a") %>% 
           html_attr("href") %>% .[grepl("id=", .)] %>%
           paste0(base.url, .)
@@ -31,7 +33,8 @@ establishment_pages <- bind_rows(results)$establishment_pages
 # Loop through each establishment page and get inspection links
 inspection_links <- vector(mode = "list", length = length(establishment_pages))
 for(i in 1:length(inspection_links)){
-     inspection_links[[i]]$link <- 
+  cat("Getting inspection link", i, "of", length(establishment_pages), "\n")   
+  inspection_links[[i]]$link <- 
           establishment_pages[i] %>% read_html() %>% html_nodes("a") %>% 
           html_attr("href") %>% .[grepl("_template", .)] %>%
           paste0(base.url, .)
