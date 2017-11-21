@@ -229,7 +229,10 @@ restaurant_inspection_data <-
      filter(!is.na(establishment.name))
 
 # Write data to csv file in "scraped-data" folder
-write_csv(restaurant_inspection_data, "dekalb-county/scraped-data/dekalb_county_restaurant_inspections.csv")
+write_csv(restaurant_inspection_data, paste0("dekalb-county/scraped-data/dekalb_county_restaurant_inspections_",
+                                             str_replace_all(as.character(as.Date(now())), "-", ""),
+                                             ".csv")
+)
 
 # Create plot of scores, and save as "ScorePlot.png"
 restaurant_inspection_data %>% 
